@@ -1,0 +1,23 @@
+:root {
+    --font-english:
+	ui-monospace,
+	SFMono-Regular,
+	Menlo,
+	Monaco,
+	Consolas,
+	"Liberation Mono",
+	"Courier New",
+	monospace;
+}
+
+body {
+    font-family: var(--font-english);
+}
+
+
+@font-face {
+  font-family: "ZahirArabic";
+  src: url("@/assets/fonts/ZahirArabic.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
