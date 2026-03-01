@@ -1,57 +1,40 @@
 <script setup>
-    import { ref } from "vue";
+    import { ref, watch } from "vue";
     import Keyboard from "@/Keyboard.vue"
-    import { arabic101Map } from "@/helper.js";
+    import InputBox from "@/InputBox.vue"
+    import { arabic101Map, getRandomElement } from "@/helper.js";
 
+    const gameStarted = ref(false);
+    const letterList = Object.values(arabic101Map);
     const activeKey = ref(null);
     const arText = ref("");
+    const gameText = ref(getRandomElement(letterList));
 
-    let clearTimer = null;
 
-    function handleKey(event) {
-	activeKey.value = event.key;
+    watch(() => arText.value, () => {
 
-	// cancel previous timeout
-	if (clearTimer) clearTimeout(clearTimer);
-
-	clearTimer = setTimeout(() => {
-	    activeKey.value = null;
-	    clearTimer = null;
-	}, 150);
-    }
-
-    function translateKey(event) {
-	const key = event.key;
-
-	// Allow control keys
-	if (key.length > 1) return;
-
-	const lower = key.toLowerCase();
-
-	// If key exists in Arabic map → insert Arabic
-	if (arabic101Map[lower]) {
-	    arText.value += arabic101Map[lower];
+	if(arText.value === gameText.value) {
+	    gameText.value = getRandomElement(letterList);
+	    arText.value = "";
 	}
-	// If user is typing Arabic keyboard, keep original
-	else {
-	    arText.value += key;
-	}
-    }
+
+	if(arText.value.length > gameText.value.length - 1) arText.value = arText.value.slice(0, arText.value.length - gameText.value.length - 1);
+    })
+
 </script>
 
 <template>
     <div class="container">
-	<div class="text-container">
-	    <input
-		v-model="arText"
-		dir="rtl"
-		lang="ar"
-		class="text-input"
-		@keydown="handleKey"
-		@keypress.prevent="translateKey"
-		placeholder="اكتب هنا"
-	    >
+	<div class="start-button-box" v-if="!gameStarted">
+	    <button class="start-button" @click="gameStarted = true">Start</button>
 	</div>
+	<div v-else class="game-text">
+	    <h2>{{ gameText }}</h2>
+	</div>
+	<InputBox
+	    v-model:ar-text="arText"
+	    v-model:active-key="activeKey"
+	/>
 	<Keyboard :active-key="activeKey" />
     </div>
 </template>
@@ -62,21 +45,25 @@
 	max-width: 85rem;       /* max-w-[85rem] */
 	padding-top: 4rem;      /* pt-16 */
     }
-
-    .text-container {
+    
+    .start-button-box {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	padding-bottom: 30px;
-
     }
 
-    .text-input {
+    .start-button {
+	font-size: 3rem;
+	padding: 16px;
+	margin-bottom: 32px;
+    }
+
+    .game-text {
 	font-family: "ZahirArabic", serif;
-	font-size: 2rem;
-	padding: 4px;
-	border-radius: 4px;
-	line-height: 1.6;
+	display: flex;
+	font-size: 2.5rem;
+	justify-content: center;
+	align-items: center;
     }
 
 </style>

@@ -20,3 +20,7 @@ export const arabic101Map = {
     "7": "٧", "8": "٨", "9": "٩",
     "0": "٠",
 };
+
+export function getRandomElement(arr){
+    return arr[Math.floor(Math.random() * arr.length)];
+}
