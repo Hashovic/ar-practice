@@ -25,8 +25,13 @@
 
 	const lower = key.toLowerCase();
 
+	
+	// If key is H or Y (alif w/ hamzah)
+	if (arabic101Map[key]) {
+	    arText.value += arabic101Map[key];
+	}
 	// If key exists in Arabic map → insert Arabic
-	if (arabic101Map[lower]) {
+	else if (arabic101Map[lower]) {
 	    arText.value += arabic101Map[lower];
 	}
 	// If user is typing Arabic keyboard, keep original

@@ -2,23 +2,52 @@
     import { ref, watch } from "vue";
     import Keyboard from "@/Keyboard.vue"
     import InputBox from "@/InputBox.vue"
-    import { arabic101Map, getRandomElement } from "@/helper.js";
+    import { arabic101Map, arabicWords, getManyRandom, shuffleArray } from "@/helper.js";
 
     const gameStarted = ref(false);
+    const gameMode = ref("words");
     const letterList = Object.values(arabic101Map);
     const activeKey = ref(null);
     const arText = ref("");
-    const gameText = ref(getRandomElement(letterList));
+    const gameText = ref(null);
+    const arrIndex = ref(0);
+    const shuffledArr = ref(null);
+    const numLeft = ref(0);
+
+
+    function startGame() {
+	if (gameMode.value === "single") {
+	    shuffledArr.value = shuffleArray(letterList);
+	}
+
+	else if (gameMode.value === "words") {
+	    shuffledArr.value = getManyRandom(arabicWords, 10);
+	}
+
+	arrIndex.value = 0;
+	arText.value = "";
+	gameText.value = shuffledArr.value[arrIndex.value];
+	numLeft.value = shuffledArr.value.length;
+	gameStarted.value = true;
+    }
 
 
     watch(() => arText.value, () => {
-
-	if(arText.value === gameText.value) {
-	    gameText.value = getRandomElement(letterList);
-	    arText.value = "";
+	if (gameStarted) {
+	    if(arText.value === gameText.value) {
+		arrIndex.value++;
+		if (arrIndex.value >= shuffledArr.value.length) gameStarted.value = false;
+		arText.value = "";
+	    }
 	}
 
-	if(arText.value.length > gameText.value.length - 1) arText.value = arText.value.slice(0, arText.value.length - gameText.value.length - 1);
+
+	if(arText.value.length > gameText.value?.length - 1) arText.value = arText.value.slice(0, arText.value.length - gameText.value.length - 1);
+    })
+
+    watch(() => arrIndex.value, () => {
+	gameText.value = shuffledArr.value[arrIndex.value];
+	numLeft.value = (shuffledArr.value.length - arrIndex.value);
     })
 
 </script>
@@ -26,10 +55,23 @@
 <template>
     <div class="container">
 	<div class="start-button-box" v-if="!gameStarted">
-	    <button class="start-button" @click="gameStarted = true">Start</button>
+	    <div class="radio-buttons">
+		<div class="radio-button">
+		    <input type="radio" id="single-id" value="single" v-model="gameMode" />
+		    <label for="single-id">Single</label>
+		</div>
+		<div class="radio-button">
+		    <input type="radio" id="words-id" value="words" v-model="gameMode" />
+		    <label for="words-id">Words</label>
+		</div>
+	    </div>
+	    <button class="start-button" @click="startGame">Start</button>
 	</div>
-	<div v-else class="game-text">
-	    <h2>{{ gameText }}</h2>
+	<div v-else>
+	    <span class="num-left">Words Left: {{ numLeft }}</span>
+	    <div class="game-text">
+		<h2>{{ gameText }}</h2>
+	    </div>
 	</div>
 	<InputBox
 	    v-model:ar-text="arText"
@@ -48,14 +90,27 @@
     
     .start-button-box {
 	display: flex;
+	flex-direction: column;
 	justify-content: center;
 	align-items: center;
+	row-gap: 20px;
     }
 
     .start-button {
 	font-size: 3rem;
 	padding: 16px;
 	margin-bottom: 32px;
+    }
+    
+    .radio-buttons {
+	font-size: 1.5rem;
+	display: flex;
+	column-gap: 20px;
+    }
+
+    .radio-button {
+	display: flex;
+	column-gap: 8px;
     }
 
     .game-text {
@@ -64,6 +119,12 @@
 	font-size: 2.5rem;
 	justify-content: center;
 	align-items: center;
+    }
+
+    .num-left {
+	display: flex;
+	justify-content: center;
+	font-size: 2rem;
     }
 
 </style>
