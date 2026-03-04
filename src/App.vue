@@ -1,8 +1,8 @@
 <script setup>
-    import { ref, watch } from "vue";
+    import { ref, computed, watch } from "vue";
     import Keyboard from "@/Keyboard.vue"
     import InputBox from "@/InputBox.vue"
-    import { arabic101Map, arabicWords, getManyRandom, shuffleArray } from "@/helper.js";
+    import { arabic101Map, arabicWords, arabicSentences, getManyRandom, shuffleArray } from "@/helper.js";
 
     const gameStarted = ref(false);
     const gameMode = ref("words");
@@ -13,7 +13,7 @@
     const arrIndex = ref(0);
     const shuffledArr = ref(null);
     const numLeft = ref(0);
-
+    const numTerms = ref(10);
 
     function startGame() {
 	if (gameMode.value === "single") {
@@ -21,7 +21,11 @@
 	}
 
 	else if (gameMode.value === "words") {
-	    shuffledArr.value = getManyRandom(arabicWords, 10);
+	    shuffledArr.value = getManyRandom(arabicWords, numTerms.value);
+	}
+
+	else if (gameMode.value === "sentences") {
+	    shuffledArr.value = getManyRandom(arabicSentences, numTerms.value);
 	}
 
 	arrIndex.value = 0;
@@ -50,12 +54,23 @@
 	numLeft.value = (shuffledArr.value.length - arrIndex.value);
     })
 
+    watch(numTerms, (val) => {
+	if (val > 50) numTerms.value = 50;
+	if (val < 1) numTerms.value = 1;
+    });
+
 </script>
 
 <template>
     <div class="container">
 	<div class="start-button-box" v-if="!gameStarted">
 	    <div class="radio-buttons">
+		<input
+		    class="num-input"
+		    type="number"
+		    v-model.number="numTerms"
+		    :disabled="gameMode === 'single'"
+		>
 		<div class="radio-button">
 		    <input type="radio" id="single-id" value="single" v-model="gameMode" />
 		    <label for="single-id">Single</label>
@@ -63,6 +78,10 @@
 		<div class="radio-button">
 		    <input type="radio" id="words-id" value="words" v-model="gameMode" />
 		    <label for="words-id">Words</label>
+		</div>
+		<div class="radio-button">
+		    <input type="radio" id="sentences-id" value="sentences" v-model="gameMode" />
+		    <label for="sentences-id">Sentences</label>
 		</div>
 	    </div>
 	    <button class="start-button" @click="startGame">Start</button>
@@ -119,6 +138,11 @@
 	font-size: 2.5rem;
 	justify-content: center;
 	align-items: center;
+    }
+
+    .num-input {
+    width: 50px;
+    text-align: center;
     }
 
     .num-left {
