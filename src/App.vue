@@ -1,5 +1,5 @@
 <script setup>
-    import { ref, computed, watch } from "vue";
+    import { ref, watch } from "vue";
     import Keyboard from "@/Keyboard.vue"
     import InputBox from "@/InputBox.vue"
     import { arabic101Map, arabicWords, arabicSentences, getManyRandom, shuffleArray } from "@/helper.js";
