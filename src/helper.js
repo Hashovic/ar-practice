@@ -1,7 +1,7 @@
 // arabic letters map
 export const arabic101Map = {
     // Letters
-    q: "ض", Q: "َ", w: "ص", e: "ث", r: "ق", t: "ف",
+    q: "ض", w: "ص", e: "ث", r: "ق", t: "ف",
     y: "غ", Y: "إ", u: "ع", i: "ه", o: "خ", p: "ح",
 
     a: "ش", s: "س", d: "ي", f: "ب", g: "ل",
